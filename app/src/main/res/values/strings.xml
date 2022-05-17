@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">IntentImplicitoB2</string>
+    <string name="hint_telefono">Telefono</string>
+    <string name="voice_camara">Presionaste la cámara</string>
+    <string name="voice_telf">Presionaste llamada</string>
+</resources>
