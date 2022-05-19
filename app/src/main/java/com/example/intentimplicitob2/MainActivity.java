@@ -7,11 +7,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
@@ -20,6 +22,7 @@ public class MainActivity extends AppCompatActivity {
 
     private EditText etTelefono;
     private ImageButton btnLlamar, btnCamara;
+    private ImageView ivImagen;
 
     //Atributos de clase - primitivos
     private String numeroTelefonico;
@@ -43,8 +46,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void activarCamara() {
-        Intent intentCamara = new Intent("android.media.action.IMAGE_CAPTURE");
-        startActivityForResult(intentCamara, CAMERA_CODE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            requestPermissions(new String[]{Manifest.permission.CAMERA}, CAMERA_CODE);
+        }
+
     }
 
     private void activarLlamada() {
@@ -82,6 +87,7 @@ public class MainActivity extends AppCompatActivity {
         etTelefono = findViewById(R.id.etTelefono);
         btnLlamar = findViewById(R.id.btnLlamar);
         btnCamara = findViewById(R.id.btnCamara);
+        ivImagen = findViewById(R.id.ivImagen);
     }
 
     private boolean revisarPermisos(String permiso){
@@ -106,6 +112,15 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
                 break;
+            case CAMERA_CODE:
+                int valor = grantResults[0];
+                if (valor == PackageManager.PERMISSION_GRANTED) {
+                    Intent intentCamara = new Intent("android.media.action.IMAGE_CAPTURE");
+                    startActivityForResult(intentCamara, CAMERA_CODE);
+                }
+
+                break;
+
             default:
                 super.onRequestPermissionsResult(requestCode, permissions, grantResults);
                 break;
@@ -117,6 +132,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         switch (requestCode) {
             case CAMERA_CODE:
+                Bitmap foto = (Bitmap) data.getExtras().get("data");
+                ivImagen.setImageBitmap(foto);
                 break;
             default:
                 super.onActivityResult(requestCode, resultCode, data);
